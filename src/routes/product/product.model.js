@@ -3,72 +3,37 @@
 import { Schema, model } from "mongoose";
 
 const ProductSchema = new Schema({
-  name: { type: String, required: true }, // Common for all
+  name: { type: String, required: true },
   description: { type: String },
   imageUrl: { type: String },
   type: {
-    type: String,
-    enum: ['product', 'service', 'product_with_service'],
+    type: [String],
+    enum: ['product', 'service', 'subscription'], 
     required: true
-  }, // Identifies the nature of the entity
+  },
 
-  // For products (One-time or EMI)
-  oneTimePaymentAmount: { type: Number }, // For one-time payment
+
+  oneTimePaymentAmount: { type: Number },
   emiOptions: [
     {
-      duration: { type: Number, required: true }, // Specific EMI duration (e.g., 3 months)
-      pricePerMonth: { type: Number, required: true } // EMI price for the duration
+      duration: { type: Number, required: false },
+      pricePerMonth: { type: Number, required: false }
     }
   ],
 
-  // For services and subscriptions
+
   subscriptionDetails: {
-    minDuration: { type: Number }, // Minimum subscription duration (e.g., 12 months)
-    maxDuration: { type: Number }, // Maximum subscription duration
-    monthlyFee: { type: Number } // Monthly subscription fee
+    minDuration: { type: Number },
+    maxDuration: { type: Number },
+    monthlyFee: { type: Number }
   },
 
   createdAt: { type: Date, default: Date.now }
 });
 
 
-const Job = model("ProductService", ProductSchema); 
+const Job = model("ProductService", ProductSchema);
 
 
 export { Job };
-
-
-
-// import { Schema, model } from "mongoose";
-
-// const jobSchema = new Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: false,
-//     },
-//     templateData: {
-//       type: String,
-//       required: true,
-//     },
-//     category: {
-//       type: String,
-//       required: false,
-//     },
-
-//   },
-//   { timestamps: true }
-// );
-
-// const Job = model("Template", jobSchema);
-
-
-// export { Job };
-
-// const mongoose = require('mongoose');
-
-
-
-
-// module.exports = mongoose.model('ProductService', ProductServiceSchema);
 

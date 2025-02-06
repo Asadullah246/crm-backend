@@ -1,6 +1,6 @@
 // const get user
 import express from "express";
-import { createUserApi, createUserApiMany, deleteUser, getUser, getUsers, updateUser } from "./testimonial.controller.js";
+import { createUserApi, createUserApiMany, deleteUser, getUser, getUsers, updateUser, getUserWithPayment } from "./testimonial.controller.js";
 
 const router = express.Router();
 
@@ -19,6 +19,7 @@ router.patch("/:_id",
 router.delete("/:_id", deleteUser);
 // single users
 router.get("/:_id", getUser);
+router.get("paymentInfo/:_id", getUserWithPayment);
 // all users
 router.get("/", getUsers);
 

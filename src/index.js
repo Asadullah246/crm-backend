@@ -28,6 +28,7 @@ import dbConnection from "./db/db.js";
 // import userRoute from "./routes/user/user.route.js";
 import admin from "./routes/admin/user.route.js";
 import team from "./routes/team/testimonial.route.js";
+import product from "./routes/product/template.route.js";
 import websiteInfo from "./routes/websiteInfo/testimonial.route.js";
 
 //  crm=======================================================
@@ -36,6 +37,7 @@ import customer from "./routes/customer/testimonial.route.js";
 import invoice from "./routes/invoice/invoice.route.js";
 import payment from "./routes/payment/payment.route.js";
 import template from "./routes/template/template.route.js";
+import transaction from "./routes/transaction/template.route.js";
 import auth from "./routes/auth/auth.router.js";
 
 // connect to database
@@ -47,11 +49,17 @@ app.use("/api/v1/customer", customer);
 app.use("/api/v1/invoice", invoice);
 app.use("/api/v1/payment", payment);
 app.use("/api/v1/template", template);
+app.use("/api/v1/product", product);
+app.use("/api/v1/transaction", transaction);
 
 // end of crm===================================================
 
+
+
+
+
 app.use("/api/v1/websiteInfo", websiteInfo);
-// app.use("/api/v1/user", userRoute); 
+// app.use("/api/v1/user", userRoute);
 app.use("/api/v1/team", team);
 
 // temp

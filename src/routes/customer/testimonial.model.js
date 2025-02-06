@@ -12,57 +12,25 @@ const jobSchema = new Schema(
     },
     email: {
       type: String,
-      required: false,
+      required: true,
     },
-    annualUpfront: {
-      type: Number,
-      required: false,
-    },
-    address: {
+    password: {
       type: String,
       required: true,
     },
-    welcomePackSent: {
+
+    streetAddress: {
       type: String,
-      required: false,
+      required: true,
     },
-    country: {
+    city: {
       type: String,
-      required: false,
+      required: true,
     },
     postalCode: {
       type: String,
       required: false,
     },
-    serviceType: {
-      type: String,
-      required: false,
-    },
-    price: {
-      type: Number,
-      required: false,
-    },
-    randomId: {
-      type: String,
-      required: false,
-    },
-    lastPayment: {
-      type: String,
-      required: false,
-    },
-    startingDate: {
-      type: String,
-      required: false,
-    },
-    firstAnnualServiceDate: {
-      type: String,
-      required: false,
-    },
-    annualServiceDueDate: {
-      type: String,
-      required: false,
-    },
-   
 
   },
   { timestamps: true }

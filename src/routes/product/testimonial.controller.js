@@ -44,7 +44,7 @@ export const updateUser = async (
 
     if (req.file) {
       // Save the file path to the database
-      const imagePath = `/uploads/${req.file.filename}`; 
+      const imagePath = `/uploads/${req.file.filename}`;
       data.logoImage = imagePath;
     }
 
@@ -94,6 +94,7 @@ export const getUsers = async (
   res,
   next
 ) => {
+
   try {
     const users = await getJobsApi();
     return res.status(201).json({ status: "success", data: users });

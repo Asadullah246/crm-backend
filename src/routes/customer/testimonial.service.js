@@ -48,6 +48,6 @@ export const getJobApi = async (_id) => {
 
 // get Jobs from DB
 export const getJobsApi = async ()=> {
-  const result = await Job.find();
+  const result = await Job.find().sort({ createdAt: -1 });
   return result;
 };

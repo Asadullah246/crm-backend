@@ -10,7 +10,7 @@ import {user} from "../admin/user.model.js";
 // import Customer from "../customer/testimonial.model.js";
 import {Job}  from "../customer/testimonial.model.js";
 import 'dotenv/config';
- 
+
 
 const Admin = user;
 const Customer = Job;
@@ -28,13 +28,15 @@ const signIn = async (req, res, next) => {
     let dbUser;
     if (role === 'admin') {
       dbUser = await Admin.findOne({ email });
+      console.log("admin", dbUser);
     } else if (role === 'customer') {
       dbUser = await Customer.findOne({ email });
+      console.log("customer", dbUser);
     } else {
       return res.send({ status: false, message: "Invalid role !" }).status(401);
     }
 
-
+    console.log("user ", dbUser);
     if (!dbUser) {
       return  res
       .send({
@@ -49,7 +51,10 @@ const signIn = async (req, res, next) => {
     console.log(dbUser);
 
     if (dbUser) {
-      const isValidPassword = await bcrypt.compare(password, dbUser.password);
+      // const isValidPassword = await bcrypt.compare(password, dbUser.password);
+      const isValidPassword = password===dbUser.password ? true : false;
+
+
       if (isValidPassword) {
         // all is ok
         // token generation
