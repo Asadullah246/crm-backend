@@ -13,7 +13,7 @@ import {
 // import Payment from "../models/Payment.js";
 
 import { Job as Transaction } from "../transaction/transaction.model.js";
-import { Job as Payment } from "../payment/testimonial.model.js";
+import { Job as Payment } from "../payment/testimonial.model.js"; 
 import moment from "moment";
 
 
