@@ -15,7 +15,7 @@ const PaymentSchema = new Schema({
 // module.exports = mongoose.model('Payment', PaymentSchema);
 
 
-const Job = model("Payment", PaymentSchema); 
+const Job = model("Payment", PaymentSchema);
 
 
-export { Job };
+export { Job };  

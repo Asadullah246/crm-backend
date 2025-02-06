@@ -19,7 +19,7 @@ router.patch("/:_id",
 router.delete("/:_id", deleteUser);
 // single users
 router.get("/:_id", getUser);
-router.get("paymentInfo/:_id", getUserWithPayment);
+router.get("/paymentInfo/:_id", getUserWithPayment); 
 // all users
 router.get("/", getUsers);
 
