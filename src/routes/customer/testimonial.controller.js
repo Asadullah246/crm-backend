@@ -778,7 +778,7 @@ export const getUserWithPayment = async (req, res, next) => {
         }
       }
 
-        if (today.date() >= 5 && transactionStart.isSameOrBefore(today.clone().add(1, "months"), "month") && !dueMonths.includes(nextMonth)) {
+        if (today.date() >= 15 && transactionStart.isSameOrBefore(today.clone().add(1, "months"), "month") && !dueMonths.includes(nextMonth)) {
 
         const nextPayment = payments.find(
           (p) =>
@@ -809,7 +809,8 @@ export const getUserWithPayment = async (req, res, next) => {
       if (dueDetails.length > 0) {
         allDues.push({
           transactionId: transaction._id,
-          totalAmountDue: totalDueAmount,
+          transaction: transaction,
+          totalAmountDue: totalDueAmount, 
           dueMonths,
           dueDetails,
         });

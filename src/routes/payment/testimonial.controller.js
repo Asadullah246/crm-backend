@@ -6,9 +6,10 @@ import {
   patchJob,
   removeJob,
 } from "./testimonial.service.js";
+import { Job } from "./testimonial.model.js";
 
 // create a single user
-export const createUserApi = async (
+export const createUserApi2 = async (
   req,
   res,
   next
@@ -30,6 +31,52 @@ export const createUserApi = async (
     return res.status(201).json({ massage: error });
   }
 };
+
+
+
+export const createUserApi = async (req, res) => {
+  try {
+    const {  customerId, paymentsData, paymentMethod } = req.body;
+    console.log("cus", customerId, "pay", paymentsData);
+
+    // Prepare an array for bulk insertion
+    let paymentsToInsert = [];
+
+    paymentsData.forEach((payment) => {
+      payment.dueDetails.forEach((due) => {
+        paymentsToInsert.push({
+          transactionId: payment.transactionId ,
+          customerId: customerId,
+          paymentMethod:paymentMethod,
+          monthForPayment: due.month, // Store month separately
+          amount: due.dueAmount,
+          status: "completed", // Default to pending if not provided
+        });
+      });
+    });
+
+    // Insert all payments at once
+    if (paymentsToInsert.length > 0) {
+      const result = await Job.insertMany(paymentsToInsert);
+      return res.status(201).json({ status: "success", message: "Payments saved successfully", data: result });
+    } else {
+      return res.status(400).json({ status: "error", message: "No payments to save" });
+    }
+
+  } catch (error) {
+    console.error("Error saving payments:", error);
+    return res.status(500).json({ status: "error", message: "Internal server error" });
+  }
+};
+
+
+
+
+
+
+
+
+
 
 // patch a single user
 export const updateUser = async (
@@ -102,3 +149,6 @@ export const getUsers = async (
     return res.status(201).json({ massage: error });
   }
 };
+
+
+
