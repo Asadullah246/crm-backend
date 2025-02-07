@@ -9,7 +9,7 @@ router.post("/",
 // upload.single('logoImage'),
  createUserApi);
 // patch single users
-router.patch("/:_id",
+router.put("/:_id", 
 // upload.single('logoImage'),
  updateUser);
 // delete single users
