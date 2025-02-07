@@ -1,4 +1,3 @@
-
 import { Job } from "./testimonial.model.js";
 import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
@@ -10,11 +9,7 @@ export const createJob = async (data) => {
   return result;
 };
 
-
-export const patchJob = async ({
-  _id,
-  data,
-})=> {
+export const patchJob = async ({ _id, data }) => {
   const query = { _id: new ObjectId(_id) };
   const updateDoc = { $set: data };
   const option = { upsert: true, runValidators: true };
@@ -35,7 +30,15 @@ export const getJobApi = async (_id) => {
 };
 
 // get Jobs from DB
-export const getJobsApi = async ()=> {
-  const result = await Job.find();
+export const getJobsApi = async () => {
+  const result = await Job.find()
+    .sort({ createdAt: -1 })
+    .populate("customerId")
+    .populate({
+      path: "transactionId", // Populate transaction details
+      populate: {
+        path: "productId", // Within transaction, populate product details
+      },
+    });
   return result;
 };
