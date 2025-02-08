@@ -5,9 +5,24 @@ const { ObjectId } = mongoose.Types;
 
 // create Job
 export const createJob = async (data) => {
-  const result = new Job(data);
-  await result.save();
-  return result;
+
+
+
+
+  const findUser = await Job.findOne({ email: data.email });
+  if (findUser) {
+    return null;
+  } else {
+    const result = new Job(data);
+    await result.save();
+    return result;
+  }
+
+
+
+  // const result = new Job(data);
+  // await result.save();
+  // return result;
 };
 
 // Create multiple Jobs

@@ -27,6 +27,11 @@ export const createUserApi = async (req, res, next) => {
 
     const user = await createJob(data);
 
+
+    if(!user){
+      return res.status(401).json({ massage: "user already exists" });
+    }
+
     return res.status(201).json({ status: "success", data: user });
   } catch (error) {
     console.log(error);
@@ -810,7 +815,7 @@ export const getUserWithPayment = async (req, res, next) => {
         allDues.push({
           transactionId: transaction._id,
           transaction: transaction,
-          totalAmountDue: totalDueAmount, 
+          totalAmountDue: totalDueAmount,
           dueMonths,
           dueDetails,
         });
