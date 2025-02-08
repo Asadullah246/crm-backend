@@ -71,8 +71,9 @@ const signIn = async (req, res, next) => {
         res.set("Authorization", token);
         //res.set('authToken', token);
         res.json({
-          status: true,
+          status: "success",
           user: dbUser,
+          role,
           message: "User Logged in success",
         });
       } else {

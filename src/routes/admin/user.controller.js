@@ -17,9 +17,9 @@ export const createUserApi = async (
   try {
     const data = req.body;
     const user = await createuser(data);
-    // if(!user){
-    //   return res.status(401).json({ massage: "user already exists" });
-    // }
+    if(!user){
+      return res.status(401).json({ massage: "user already exists" });
+    }
     // return res.status(200).json({ status: "success", data: user });
     return res.status(201).json({ status: "success", data: user });
   } catch (error) {

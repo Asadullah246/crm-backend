@@ -4,18 +4,18 @@ import { user } from "./user.model.js";
 
 // create Job
 export const createuser = async (data) => {
-  // const findUser = await user.findOne({ signingId: data.signingId });
-  // if (findUser) {
-  //   return null;
-  // } else {
-  //   const result = new user(data);
-  //   await result.save();
-  //   return result;
-  // }
+  const findUser = await user.findOne({ email: data.email });
+  if (findUser) {
+    return null;
+  } else {
+    const result = new user(data);
+    await result.save();
+    return result;
+  }
 
-  const result = new user(data);         
-  await result.save();
-  return result;
+  // const result = new user(data);
+  // await result.save();
+  // return result;
 };
 
 export const createuser2 = async (data) => {
