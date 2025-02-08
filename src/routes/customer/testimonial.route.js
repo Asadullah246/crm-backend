@@ -1,6 +1,6 @@
 // const get user
 import express from "express";
-import { createUserApi, createUserApiMany, deleteUser, getUser, getUsers, updateUser, getUserWithPayment } from "./testimonial.controller.js";
+import { createUserApi, createUserApiMany, deleteUser, getUser, getUsers, updateUser, getUserWithPayment, getAllCustomersDue } from "./testimonial.controller.js";
 
 const router = express.Router();
 
@@ -22,5 +22,6 @@ router.get("/:_id", getUser);
 router.get("/paymentInfo/:_id", getUserWithPayment);
 // all users
 router.get("/", getUsers);
+router.get("/grandTotal/amount", getAllCustomersDue);
 
 export default router;
