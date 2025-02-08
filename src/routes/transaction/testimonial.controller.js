@@ -44,7 +44,7 @@ export const updateUser = async (
 
     if (req.file) {
       // Save the file path to the database
-      const imagePath = `/uploads/${req.file.filename}`; 
+      const imagePath = `/uploads/${req.file.filename}`;
       data.logoImage = imagePath;
     }
 
@@ -88,17 +88,31 @@ export const getUser = async (
   }
 };
 
-// get all users
-export const getUsers = async (
-  req,
-  res,
-  next
-) => {
+
+
+
+export const getUsers = async (req, res) => {
   try {
-    const users = await getJobsApi();
-    return res.status(201).json({ status: "success", data: users });
+    const { status, search, customerId } = req.query; // Extract query parameters
+
+    let filter = {}; // Default empty filter
+
+    if (status) {
+      filter.status = status; // Filter by status (active/pending)
+    }
+
+    if (search) {
+      filter.productName = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    if (customerId) {
+      filter.customerId = customerId; // Filter by customer ID
+    }
+
+    const users = await getJobsApi(filter); // Pass the filter to Mongoose query
+    return res.status(200).json({ status: "success", data: users });
   } catch (error) {
-    console.log(error);
-    return res.status(201).json({ massage: error });
+    console.error("Error fetching users:", error);
+    return res.status(500).json({ message: error.message });
   }
 };

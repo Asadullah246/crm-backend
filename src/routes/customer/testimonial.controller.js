@@ -63,12 +63,12 @@ export const updateUser = async (req, res, next) => {
     const { _id } = req.params;
     const data = req.body;
 
-    if (req.file) {
-      // Save the file path to the database
-      const imagePath = `/uploads/${req.file.filename}`;
-      data.logoImage = imagePath;
-    }
-
+    // if (req.file) {
+    //   // Save the file path to the database
+    //   const imagePath = `/uploads/${req.file.filename}`;
+    //   data.logoImage = imagePath;
+    // }
+console.log("data", data); 
     const user = await patchJob({ _id, data });
     return res.status(201).json({ status: "success", data: user });
   } catch (error) {

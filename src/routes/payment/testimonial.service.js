@@ -25,7 +25,7 @@ export const removeJob = async (_id) => {
 
 // get single Job from DB
 export const getJobApi = async (_id) => {
-  const result = await Job.findOne({ _id: new ObjectId(_id) });
+  const result = await Job.find({ customerId: _id }); 
   return result;
 };
 

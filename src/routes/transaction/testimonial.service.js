@@ -35,7 +35,14 @@ export const getJobApi = async (_id) => {
 };
 
 // get Jobs from DB
-export const getJobsApi = async ()=> {
-  const result = await Job.find();
+// export const getJobsApi = async ()=> {
+//   const result = await Job.find();
+//   return result;
+// };
+
+export const getJobsApi = async (filter = {}) => {
+  const result = await Job.find(filter).populate("productId") // Populate product data
+  .sort({ createdAt: -1 });
   return result;
 };
+

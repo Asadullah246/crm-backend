@@ -89,7 +89,7 @@ export const getUser = async (
 };
 
 // get all users
-export const getUsers = async (
+export const getUsers = async ( 
   req,
   res,
   next
