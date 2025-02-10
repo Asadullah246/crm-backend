@@ -103,15 +103,47 @@ export const getUser = async (req, res, next) => {
 };
 
 // get all users
-export const getUsers = async (req, res, next) => {
+// export const getUsers = async (req, res, next) => {
+//   try {
+//     const users = await getJobsApi();
+//     return res.status(201).json({ status: "success", data: users });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(201).json({ massage: error });
+//   }
+// };
+
+export const getUsers = async (req, res) => {
   try {
-    const users = await getJobsApi();
-    return res.status(201).json({ status: "success", data: users });
+    const {search } = req.query; // Extract query parameters
+
+    let filter = {}; // Default empty filter
+
+
+    if (search) { 
+      filter.name = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+
+    const users = await getJobsApi(filter); // Pass the filter to Mongoose query
+    return res.status(200).json({ status: "success", data: users });
   } catch (error) {
-    console.log(error);
-    return res.status(201).json({ massage: error });
+    console.error("Error fetching users:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -484,7 +516,7 @@ export const getAllCustomersDue = async (req, res) => {
     // }, null, 2));
 
 
- 
+
     return res.status(200).json({
       status: "success",
       data: finalData,
