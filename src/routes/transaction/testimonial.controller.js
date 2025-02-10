@@ -1,4 +1,5 @@
 
+import { sendMailToAdmin } from "../../utilities/sendMail.js";
 import {
   createJob,
   getJobApi,
@@ -24,7 +25,17 @@ export const createUserApi = async (
     // }
 
     const user = await createJob(data);
-    return res.status(201).json({ status: "success", data: user });
+    const  emailData={
+      customer_id:data?.customerId,
+      productName : data?.productName,
+      type: data?.type,
+      note:data?.note,
+      startDate:data?.startDate,
+      status: data?.status,
+
+    };
+    const sendMail = await sendMailToAdmin(emailData);
+    return res.status(201).json({ status: "success", data: user , emailStatus: sendMail});
   } catch (error) {
     console.log(error);
     return res.status(201).json({ massage: error });
