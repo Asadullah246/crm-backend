@@ -11,6 +11,7 @@ import { Job as Transaction } from "../transaction/transaction.model.js";
 import { Job as Payment } from "../payment/testimonial.model.js";
 import { Job as Customer } from "../customer/testimonial.model.js";
 import moment from "moment";
+import {sendMailToAdmin} from "../../utilities/sendMail.js" 
 
 // const bcrypt = require("bcrypt");
 // const JWT = require("jsonwebtoken");
@@ -33,10 +34,22 @@ export const createUserApi = async (req, res, next) => {
       return res.status(401).json({ massage: "user already exists" });
     }
 
+    const  emailData={
+      name:data?.name,
+      email : data?.email,
+      phone: data?.phone,
+      address:data?.streetAddress,
+      text:"New customer account created"
+
+    };
+
+
+  const sendMail = await sendMailToAdmin(emailData);
     return res.status(201).json({ status: "success", data: user });
+
   } catch (error) {
     console.log(error);
-    return res.status(201).json({ massage: error });
+    return res.status(201).json({ massage: error, mailStatus: sendMail });
   }
 };
 

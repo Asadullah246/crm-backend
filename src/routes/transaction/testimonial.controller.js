@@ -33,7 +33,7 @@ export const createUserApi = async (
       startDate:data?.startDate,
       status: data?.status,
 
-    };
+    }; 
     const sendMail = await sendMailToAdmin(emailData);
     return res.status(201).json({ status: "success", data: user , emailStatus: sendMail});
   } catch (error) {

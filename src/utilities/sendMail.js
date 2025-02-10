@@ -28,7 +28,7 @@ export const sendMailToAdmin = async (data) => {
   try {
     // if (!data || !data.email || !data.name || !data.departureTime) {
     //   throw new Error("Missing required fields");
-    // } 
+    // }
 
     const mailOptions = {
       from: process.env.EMAIL_USER, // Sender email
@@ -36,6 +36,13 @@ export const sendMailToAdmin = async (data) => {
       subject:data?.subject || "Booking Confirmation",
       text: `
       Hello,
+ ${data?.text} :
+
+  name: ${data?.name}
+      email: ${data?.email}
+      phone: ${data?.phone}
+      Address: ${data?.address}
+
 
       Booking from:
       customer id: ${data?.customer_id}
