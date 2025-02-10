@@ -69,7 +69,7 @@ export const updateUser = async (req, res, next) => {
     //   const imagePath = `/uploads/${req.file.filename}`;
     //   data.logoImage = imagePath;
     // }
-console.log("data", data);
+// console.log("data", data);
     const user = await patchJob({ _id, data });
     return res.status(201).json({ status: "success", data: user });
   } catch (error) {
@@ -102,16 +102,7 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-// get all users
-// export const getUsers = async (req, res, next) => {
-//   try {
-//     const users = await getJobsApi();
-//     return res.status(201).json({ status: "success", data: users });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(201).json({ massage: error });
-//   }
-// };
+
 
 export const getUsers = async (req, res) => {
   try {
@@ -120,13 +111,27 @@ export const getUsers = async (req, res) => {
     let filter = {}; // Default empty filter
 
 
-    if (search) { 
+    if (search) {
       filter.name = { $regex: search, $options: "i" }; // Case-insensitive search
     }
 
 
     const users = await getJobsApi(filter); // Pass the filter to Mongoose query
-    return res.status(200).json({ status: "success", data: users });
+
+      // Fetch additional data for each user in parallel using Promise.all
+      const usersWithDues = await Promise.all(
+        users.map(async (user) => {
+          const duesData = await calculateDues(user._id);
+          return {
+            ...user.toObject(), // Convert Mongoose document to plain object
+            dues: duesData.status === "success" ? duesData.data.dues : [],
+            totalAmountDue: duesData.status === "success" ? duesData.data.totalAmount : 0,
+          };
+        })
+      );
+
+
+    return res.status(200).json({ status: "success", data: usersWithDues  });
   } catch (error) {
     console.error("Error fetching users:", error);
     return res.status(500).json({ message: error.message });
@@ -180,15 +185,15 @@ export const getUserWithPayment = async (req, res, next) => {
       let dueDetails = [];
       let totalDueAmount = 0;
       let dueMonths = [];
-      console.log("transaction", transaction);
+      // console.log("transaction", transaction);
       const transactionStart = moment(transaction.startDate);
-      console.log("start", transactionStart);
+      // console.log("start", transactionStart);
       const transactionEnd = transaction.endDate
         ? moment(transaction.endDate)
         : null;
-      console.log("end", transactionEnd);
+      // console.log("end", transactionEnd);
       const transactionStartMonth = transactionStart.format("YYYY-MM");
-      console.log("transactionStartMonth", transactionStartMonth);
+      // console.log("transactionStartMonth", transactionStartMonth);
 
       // for one time payment
       if (transaction.type === "oneTimePayment") {
@@ -316,15 +321,21 @@ export const getUserWithPayment = async (req, res, next) => {
       }
     }
 
+    const totalAmount = allDues?.reduce((accumulator, currentItem) => {
+      return accumulator + currentItem.totalAmountDue;
+    }, 0);
+
+
     return res.status(200).json({
       status: "success",
-      data: { user, dues: allDues },
+      data: { user, dues: allDues, totalAmount: totalAmount },
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ status: "error", message: error.message });
   }
 };
+
 
 
 
@@ -528,3 +539,185 @@ export const getAllCustomersDue = async (req, res) => {
   }
 };
 
+
+
+
+export const calculateDues = async (_id) => {
+  try {
+    // const { _id } = req.params;
+
+    const user = await getJobApi(_id);
+    if (!user) {
+      return  { status: "error", message: "Customer not found" };
+    }
+
+    const transactions = await Transaction.find({
+      customerId: _id,
+      status: "active",
+    });
+    if (transactions.length === 0) {
+      return { status: "success", data: { user, dues: [] } };
+    }
+
+    const payments = await Payment.find({ customerId: _id });
+
+    const today = moment();
+    const currentMonth = today.format("YYYY-MM");
+    const nextMonth = today.clone().add(1, "months").format("YYYY-MM");
+
+    let allDues = [];
+
+    for (const transaction of transactions) {
+      let dueDetails = [];
+      let totalDueAmount = 0;
+      let dueMonths = [];
+      // console.log("transaction", transaction);
+      const transactionStart = moment(transaction.startDate);
+      // console.log("start", transactionStart);
+      const transactionEnd = transaction.endDate
+        ? moment(transaction.endDate)
+        : null;
+      // console.log("end", transactionEnd);
+      const transactionStartMonth = transactionStart.format("YYYY-MM");
+      // console.log("transactionStartMonth", transactionStartMonth);
+
+      // for one time payment
+      if (transaction.type === "oneTimePayment") {
+        const paymentRecord = payments.find(
+          (p) => p.transactionId.toString() === transaction._id.toString()
+        );
+        if (!paymentRecord || paymentRecord.status !== "completed") {
+          dueDetails.push({
+            month: transactionStartMonth,
+            dueAmount: transaction.oneTimePaymentAmount || 0,
+            status: paymentRecord ? paymentRecord.status : "pending",
+          });
+          totalDueAmount += transaction.oneTimePaymentAmount || 0;
+        }
+      }
+      // for subscription and emi option
+      else {
+        let loopDate = transactionStart.clone().startOf("month");
+        // console.log("loopDate", loopDate);
+        while (loopDate.isSameOrBefore(today, "month")) {
+          const monthString = loopDate.format("YYYY-MM");
+
+          if (transactionEnd && loopDate.isAfter(transactionEnd, "month"))
+            break;
+
+          const paymentRecord = payments.find(
+            (p) =>
+              p.transactionId.toString() === transaction._id.toString() &&
+              moment(p.monthForPayment).format("YYYY-MM") === monthString
+          );
+
+          if (!paymentRecord || paymentRecord.status !== "completed") {
+            let dueAmount =
+              transaction.type === "subscription"
+                ? transaction.subscriptionDetails?.pricePerMonth || 0
+                : transaction.type === "emi"
+                ? transaction.emiDetails?.pricePerMonth || 0
+                : 0;
+
+            if (monthString === transactionStartMonth && transaction.type !== "emi") {
+              const daysInMonth = loopDate.daysInMonth();
+              const startDay = transactionStart.date();
+              const usedDays = daysInMonth - startDay + 1;
+              dueAmount = (dueAmount / daysInMonth) * usedDays;
+            }
+
+            if (dueAmount > 0) {
+              dueDetails.push({
+                month: monthString,
+                dueAmount,
+                status: paymentRecord ? paymentRecord.status : "pending",
+              });
+              dueMonths.push(monthString);
+              totalDueAmount += dueAmount;
+            }
+          }
+          loopDate.add(1, "month");
+        }
+      }
+
+
+      if ( transactionStart.isSameOrBefore(today, "month") &&  !dueMonths.includes(currentMonth)) {
+        const currentPayment = payments.find(
+          (p) =>
+            p.transactionId.toString() === transaction._id.toString() &&
+            moment(p.monthForPayment).format("YYYY-MM") === currentMonth
+        );
+
+        if (!currentPayment || currentPayment.status !== "completed") {
+          let currentDueAmount =
+            transaction.type === "subscription"
+              ? transaction.subscriptionDetails?.pricePerMonth || 0
+              : transaction.type === "emi"
+              ? transaction.emiDetails?.pricePerMonth || 0
+              : 0;
+
+          if (currentDueAmount > 0) {
+            dueDetails.push({
+              month: currentMonth,
+              dueAmount: currentDueAmount,
+              status: currentPayment ? currentPayment.status : "pending",
+            });
+            dueMonths.push(currentMonth);
+            totalDueAmount += currentDueAmount;
+          }
+        }
+      }
+
+        if (today.date() >= 15 && transactionStart.isSameOrBefore(today.clone().add(1, "months"), "month") && !dueMonths.includes(nextMonth)) {
+
+        const nextPayment = payments.find(
+          (p) =>
+            p.transactionId.toString() === transaction._id.toString() &&
+            moment(p.monthForPayment).format("YYYY-MM") === nextMonth
+        );
+
+        if (!nextPayment || nextPayment.status !== "completed") {
+          let nextDueAmount =
+            transaction.type === "subscription"
+              ? transaction.subscriptionDetails?.pricePerMonth || 0
+              : transaction.type === "emi"
+              ? transaction.emiDetails?.pricePerMonth || 0
+              : 0;
+
+          if (nextDueAmount > 0) {
+            dueDetails.push({
+              month: nextMonth,
+              dueAmount: nextDueAmount,
+              status: nextPayment ? nextPayment.status : "pending",
+            });
+            dueMonths.push(nextMonth);
+            totalDueAmount += nextDueAmount;
+          }
+        }
+      }
+
+      if (dueDetails.length > 0) {
+        allDues.push({
+          transactionId: transaction._id,
+          transaction: transaction,
+          totalAmountDue: totalDueAmount,
+          dueMonths,
+          dueDetails,
+        });
+      }
+    }
+
+    const totalAmount = allDues?.reduce((accumulator, currentItem) => {
+      return accumulator + currentItem.totalAmountDue;
+    }, 0);
+
+
+    return {
+      status: "success",
+      data: { user, dues: allDues, totalAmount: totalAmount },
+    };
+  } catch (error) {
+    console.error(error);
+    return { status: "error", message: error.message };
+  }
+};

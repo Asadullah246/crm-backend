@@ -15,7 +15,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-console.log("path is ", path.join(__dirname, "uploads"));
+// console.log("path is ", path.join(__dirname, "uploads"));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/src/uploads", express.static(path.join(__dirname, "uploads")));

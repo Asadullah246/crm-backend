@@ -32,11 +32,11 @@ const TransactionSchema = new Schema({
 
   oneTimePaymentAmount: { type: Number },
 
-  totalAmount: { type: Number, required: false },
+  totalAmount: { type: Number, required: false },  
   note: { type: String, required: false },
   description: { type: String, required: false },
   startDate: { type: Date, required: true },
-  paymentStartDate: { type: Date, required: false }, 
+  paymentStartDate: { type: Date, required: false },
   endDate: { type: Date },
   status: { type: String, enum: ['active', 'completed','pending','draft', 'cancelled'], default: 'active' },
 

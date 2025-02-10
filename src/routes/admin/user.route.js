@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/", createUserApi);
 router.post("/login", createUserApi2);
 // patch single users
-router.patch("/:_id", updateUser); 
+router.put("/:_id", updateUser);
 // delete single users
 router.delete("/:_id", deleteUser);
 // single users

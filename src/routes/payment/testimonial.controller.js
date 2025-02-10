@@ -37,7 +37,7 @@ export const createUserApi2 = async (
 export const createUserApi = async (req, res) => {
   try {
     const {  customerId, paymentsData, paymentMethod } = req.body;
-    console.log("cus", customerId, "pay", paymentsData);
+    // console.log("cus", customerId, "pay", paymentsData);
 
     // Prepare an array for bulk insertion
     let paymentsToInsert = [];
