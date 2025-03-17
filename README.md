@@ -37,12 +37,12 @@ npm run dev
 ## .env setup 
 create a .env file at root and add those credentials : 
 
-DATABASE_URL=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_key
-EMAIL_HOST=smtp.example.com
-EMAIL_USER=your_email@example.com
-EMAIL_PASS=your_email_password
-JWT_EXPIRY_TIME=give a time here
+* DATABASE_URL=your_mongodb_connection_string
+* JWT_SECRET=your_jwt_secret_key
+* EMAIL_HOST=smtp.example.com
+* EMAIL_USER=your_email@example.com
+* EMAIL_PASS=your_email_password
+* JWT_EXPIRY_TIME=give a time here
 
 
 
