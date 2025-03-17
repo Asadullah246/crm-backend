@@ -25,7 +25,8 @@ This is the backend for a Customer Relationship Management (CRM) system. It prov
 To set up and run this project locally:
 
 ### Clone the repository
-git clone <repo-link>
+git clone https://github.com/Asadullah246/crm-backend.git
+
 cd crm-backend
 
 ### Install dependencies
